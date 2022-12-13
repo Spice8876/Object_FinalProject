@@ -1,5 +1,6 @@
 package InGame;
 
+import InGame.Music.MusicInfo;
 import InGame.Schema.NodeInfo;
 import common.Constants;
 
@@ -13,15 +14,20 @@ public class NodeManager {
     NodeBackgroundPanel backGround;
     NodeController nodeController;
     NodeGenerator nodeGenerator;
+
+    GameManager gameManager;
+    MusicInfo musicInfo;
     List<Node> nodes = new LinkedList<>();
-    public NodeManager(NodeBackgroundPanel nodeBackgroundPanel){
+    public NodeManager(NodeBackgroundPanel nodeBackgroundPanel , GameManager gameManager){
         this.backGround = nodeBackgroundPanel;
         long startTime = System.currentTimeMillis();
         nodeController = new NodeController(this , startTime);
         nodeGenerator = new NodeGenerator(this);
+        this.gameManager = gameManager;
     }
 
-    public void start(int speed){
+    public void start(MusicInfo musicInfo , int speed){
+        this.musicInfo = musicInfo;
         nodeController.start();
         nodeGenerator.setSpeed(speed);
         nodeGenerator.start();
@@ -45,7 +51,10 @@ public class NodeManager {
         for(int i = 0; i< nodes.size(); i++){
             Node node = nodes.get(i);
             if(node.line == line){
-                if(node.tryTouch()) break;
+                if(node.tryTouch()) {
+                    gameManager.upScore();
+                    break;
+                }
             }
         }
     }
@@ -57,6 +66,11 @@ public class NodeManager {
                 ((LongNodePanel) node).onTouchOff();
             }
         }
+    }
+
+    public void off(){
+        nodeController.interrupt();
+        nodeGenerator.interrupt();
     }
 }
 
@@ -81,16 +95,23 @@ class NodeController extends Thread{
                 //노드 이동 및 삭제
                 for(int i = nodeManager.nodes.size() - 1; i >= 0; i--){
                     Node node = nodeManager.nodes.get(i);
-                    if(node.getY() > Constants.MaxHeight + 180)
+                    if(node.getY() > Constants.MaxHeight + 180){
                         nodeManager.removeNode(node);
+                        if(!node.isTouched){
+                            nodeManager.gameManager.gameOver();
+                        }
+                    }
+
                     else
                         node.move();
                 }
             } catch (InterruptedException e) {
+                System.out.println("[NodeController.run()] 스레드 종료");
                 throw new RuntimeException(e);
             }
         }
     }
+
 }
 
 /**
@@ -105,13 +126,7 @@ class NodeGenerator extends Thread{
 
     public NodeGenerator(NodeManager nodeManager){
         this.nodeManager = nodeManager;
-        SheetReader sheetReader = new SheetReader();
-        try {
-            nodeInfos = sheetReader.read();
-        }
-        catch (Exception e){
-            System.out.println(e);
-        }
+
     }
 
     public void setSpeed(int speed){
@@ -119,6 +134,15 @@ class NodeGenerator extends Thread{
     }
 
     public void run() {
+
+        SheetReader sheetReader = new SheetReader();
+        try {
+            nodeInfos = sheetReader.read(nodeManager.musicInfo.nodePath);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+
         this.startTime = System.currentTimeMillis();
         nodeInfos.forEach(nodeInfo -> {
             nodeInfo.setTime(startTime);
@@ -140,6 +164,7 @@ class NodeGenerator extends Thread{
                 Thread.sleep(10);
                 //System.out.println("[NodeGenerator] 노드 갯수  : " + nodeManager.nodes.size());
             } catch (InterruptedException e) {
+                System.out.println("[NodeGenerator.run()] 스레드 종료");
                 throw new RuntimeException(e);
             }
         }

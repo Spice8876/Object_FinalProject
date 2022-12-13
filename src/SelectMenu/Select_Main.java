@@ -25,7 +25,7 @@ import javax.swing.*;
 public class Select_Main {
 
     public static void main(String[] args) {
-
+        new Dinae();
     }
 
 }
@@ -40,7 +40,7 @@ class Dinae extends JFrame {
         JPanel jPanel = new JPanel();
         JButton btn1 = new JButton("곡 A");
         JButton btn2 = new JButton("곡 B");
-        setPreferredSize(new Dimension(960,480)); //창 크기 설정
+        setPreferredSize(new Dimension(480,960)); //창 크기 설정
         jPanel.add(btn1);
         jPanel.add(btn2);
         MyMouseListener listener1 = new MyMouseListener();
@@ -170,12 +170,6 @@ class Dinae extends JFrame {
         } catch (Exception e) {
             System.err.println("Put the music.wav file in the sound folder if you want to play background music, only optional!");
         }
-    }
-
-
-
-    public static void main(String[] args) {
-        new Dinae();
     }
 }
 

@@ -14,17 +14,15 @@ public class SheetReader {
 
     List<NodeInfo> nodes = new LinkedList<>();
 
-    public static void main(String[] args) throws IOException {
-        new SheetReader().read();
-    }
-
-    public Queue<NodeInfo> read() throws IOException {
+    public Queue<NodeInfo> read(String file) throws IOException {
         BufferedReader reader = new BufferedReader(
-                new FileReader("Sheets/test3.txt")
+                new FileReader(file)
         );
 
         Queue<NodeInfo> nodeInfos = new LinkedList<>();
         String str;
+        str = reader.readLine();
+        System.out.println("[SheetReader.read() ] 길이 : " + str);
         while ((str = reader.readLine()) != null) {
             int time = (int)(Float.valueOf(str.split(",")[0].trim()) * 1000);
             int line = Integer.valueOf(str.split(",")[1].trim());

@@ -11,9 +11,16 @@ public class GameManager {
     public int score = 0;
     public NodeManager nodeManager;
     public MusicManager musicManager = new MusicManager();
+    public BackGroundPanel backGroundPanel;
 
-    public GameManager(BackGroundPanel backGroundPanel){
-        nodeManager = new NodeManager(backGroundPanel.nodeBackgroundPanel);
+    public InGamePanel inGamePanel;
+
+    public MusicInfo musicInfo;
+
+    public GameManager(InGamePanel inGamePanel , BackGroundPanel backGroundPanel){
+        nodeManager = new NodeManager(backGroundPanel.nodeBackgroundPanel,this);
+        this.inGamePanel = inGamePanel;
+        this.backGroundPanel = backGroundPanel;
         backGroundPanel.addKeyListener(new KeyPressedActionMaker(keyEvent->{
             switch (keyEvent.getKeyCode()){
 
@@ -58,10 +65,18 @@ public class GameManager {
 
     public void upScore(){
         score++;
+        backGroundPanel.scoreLabel.onScoreUpdated(score);
     }
 
-    public void start(){
-        nodeManager.start(3);
-        musicManager.play(MusicInfo.Gymnopedies);
+    public void start(MusicInfo musicInfo){
+        this.musicInfo = musicInfo;
+        nodeManager.start(musicInfo,musicInfo.speed);
+        musicManager.play(musicInfo);
+    }
+
+    public void gameOver(){
+        inGamePanel.gameOver();
+        nodeManager.off();
+        musicManager.stop();
     }
 }

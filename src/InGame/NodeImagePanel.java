@@ -10,7 +10,6 @@ public class NodeImagePanel extends Node{
     int Width = 120;
     int Height = 180;
     int speed = 3;
-    boolean isTouched = false;
     long startTime;
 
     public NodeImagePanel(int line , long startTime , int speed){
