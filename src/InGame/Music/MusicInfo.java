@@ -30,7 +30,7 @@ public class MusicInfo{
     public static MusicInfo Canon = new MusicInfo(
             "Canon in D major",
             59980,
-            3700,
+            0,
             "Music/Canon.wav",
             "Sheets/Canon.txt",
             10
@@ -39,7 +39,7 @@ public class MusicInfo{
     public static MusicInfo HeyJude = new MusicInfo(
             "Hey Jude",
             59560,
-            3700,
+            900,
             "Music/Hey Jude.wav",
             "Sheets/Hey Jude.txt",
             10
